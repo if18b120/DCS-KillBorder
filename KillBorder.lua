@@ -104,8 +104,8 @@ function KillBorder.playerLoop(args)
 				--to be implemented
 			end
 		elseif math.abs(distance) < args.self.warnDistance then
-			trigger.action.outTextForGroup(args.playerObject:getGroup():getID(), args.playerObject:getPlayerName() .. ' you are close to the border of the allowed area, passing the border will be punished', args.self.checkTime - 2, false)
-			trigger.action.outSoundForGroup(args.playerObject:getGroup():getID(), args.self.sound)
+			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ' you are close to the border of the allowed area, passing the border will be punished', args.self.checkTime - 2, false)
+			trigger.action.outSoundForUnit(args.playerObject:getID(), args.self.sound)
 		else
 			args.self.groupArray[args.playerObject:getID()] = 0
 		end
