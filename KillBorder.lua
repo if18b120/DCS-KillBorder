@@ -79,6 +79,7 @@ function KillBorder:generate(ReferenceGroup, Coalition, Side, GroupIdentifier, T
 	self.border.c = y1 - self.border.a * x1
 
 	trigger.action.lineToAll(-1, 69420, {x = self.border.a * 1000000 + self.border.c, y = 500, z = 1000000}, {x = self.border.a * -1000000 + self.border.c, y = 500, z = -1000000}, {1, 0, 0, 1}, 1, true)
+	trigger.action.textToAll(-1, 42069, {x = units[1]:getPoint().x - 6000, y = units[1]:getPoint().y, z = units[1]:getPoint().z + 6000}, {1, 0, 0, 1}, {1, 0, 0, 0}, 20, true, 'PVP Border')
 end
 
 function KillBorder.playerLoop(args)
