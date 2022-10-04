@@ -74,9 +74,11 @@ function KillBorder:generate(ReferenceGroup, Coalition, Side, GroupIdentifier, T
 		x1 = units[2]:getPoint().z
 		y1 = units[2]:getPoint().x
 	end
-	
+
 	self.border.a = (y2-y1)/(x2-x1)
 	self.border.c = y1 - self.border.a * x1
+
+	trigger.action.lineToAll(-1, 69420, {x = self.border.a * 1000000 + self.border.c, y = 500, z = 1000000}, {x = self.border.a * -1000000 + self.border.c, y = 500, z = -1000000}, {1, 0, 0, 1}, 1, true)
 end
 
 function KillBorder.playerLoop(args)
