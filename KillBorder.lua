@@ -48,7 +48,7 @@ sound/Sound = soundfile to be played, has to be in the mission file with the fol
 --]]
 
 function KillBorder:generate(ReferenceGroup, Coalition, Side, GroupIdentifier, Time, WarnDistance, PunishType, PunishTimer, Sound)
-	--trigger.action.outText("running", 10, false)
+	-- trigger.action.outText("running", 10, false)
 	self.coalition = Coalition
 	self.side = Side
 	self.groupIdentifier = GroupIdentifier
@@ -89,7 +89,7 @@ function KillBorder.playerLoop(args)
 		local distance = args.self:getDistance(args.playerObject)
 		if distance < 0 then
 			if args.self.punishType == 0 then
-				if args.self.groupArray[args.playerObject:getID()] < args.self.punishTimer then
+				if args.self.groupArray[args.playerObject:getID()] >= args.self.punishTimer then
 					args.self.groupArray[args.playerObject:getID()] = 0
 					trigger.action.explosion(args.playerObject:getPoint(), 1)
 				else
