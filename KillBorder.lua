@@ -48,7 +48,7 @@ sound/Sound = soundfile to be played, has to be in the mission file with the fol
 --]]
 
 function KillBorder:generate(ReferenceGroup, Coalition, Side, GroupIdentifier, Time, WarnDistance, PunishType, PunishTimer, Sound)
-	--trigger.action.outText("running", 10, false)
+	-- trigger.action.outText("running", 10, false)
 	self.coalition = Coalition
 	self.side = Side
 	self.groupIdentifier = GroupIdentifier
@@ -74,9 +74,12 @@ function KillBorder:generate(ReferenceGroup, Coalition, Side, GroupIdentifier, T
 		x1 = units[2]:getPoint().z
 		y1 = units[2]:getPoint().x
 	end
-	
+
 	self.border.a = (y2-y1)/(x2-x1)
 	self.border.c = y1 - self.border.a * x1
+
+	trigger.action.lineToAll(-1, 69420, {x = self.border.a * 1000000 + self.border.c, y = 500, z = 1000000}, {x = self.border.a * -1000000 + self.border.c, y = 500, z = -1000000}, {1, 0, 0, 1}, 1, true)
+	trigger.action.textToAll(-1, 42069, {x = units[1]:getPoint().x - 6000, y = units[1]:getPoint().y, z = units[1]:getPoint().z + 6000}, {1, 0, 0, 1}, {1, 0, 0, 0}, 20, true, 'PVP Border')
 end
 
 function KillBorder.playerLoop(args)
@@ -88,8 +91,9 @@ function KillBorder.playerLoop(args)
 		local y0 = args.playerObject:getPoint().x
 		local distance = args.self:getDistance(args.playerObject)
 		if distance < 0 then
+			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ' you are beyond the border of the allowed area, you will be punished!', args.self.checkTime - 2, false)
 			if args.self.punishType == 0 then
-				if args.self.groupArray[args.playerObject:getID()] < args.self.punishTimer then
+				if args.self.groupArray[args.playerObject:getID()] >= args.self.punishTimer then
 					args.self.groupArray[args.playerObject:getID()] = 0
 					trigger.action.explosion(args.playerObject:getPoint(), 1)
 				else
@@ -104,8 +108,8 @@ function KillBorder.playerLoop(args)
 				--to be implemented
 			end
 		elseif math.abs(distance) < args.self.warnDistance then
-			trigger.action.outTextForGroup(args.playerObject:getGroup():getID(), args.playerObject:getPlayerName() .. ' you are close to the border of the allowed area, passing the border will be punished', args.self.checkTime - 2, false)
-			trigger.action.outSoundForGroup(args.playerObject:getGroup():getID(), args.self.sound)
+			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ' you are close to the border of the allowed area, passing the border will be punished!', args.self.checkTime - 2, false)
+			trigger.action.outSoundForUnit(args.playerObject:getID(), args.self.sound)
 		else
 			args.self.groupArray[args.playerObject:getID()] = 0
 		end
