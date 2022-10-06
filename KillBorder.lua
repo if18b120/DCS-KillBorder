@@ -121,12 +121,31 @@ function KillBorder.playerLoop(args)
 		args.self.loopID = timer.scheduleFunction(args.self.playerLoop, args, timer.getTime() + args.self.checkTime)
 	end
 end
-
+--[[
 function KillBorder:getDistance(object)
 	return (self.border.a * object:getPoint().z - object:getPoint().x + self.border.c) / math.sqrt((self.border.a)^2 + 1) * self.side
 end
+--]]
+function getMinDistance(A, B, P)
+    local AB = getV2(A, B)
+    
+    local BP = getV2(B, P)
 
-function KillBorder:isBeyond(object)
+   	local AP = getV2(A, P)
+
+    local AB_BP = AB.x * BP.x + AB.z * BP.z
+    local AB_AP = AB.x * AP.x + AB.z * AP.z
+ 
+    if AB_BP > 0 then
+        return v2Magnitude(BP)
+    elseif AB_AP < 0 then
+		return v2Magnitude(AP)
+    else
+		return math.abs(AB.x * AP.z - AB.z * AP.x) / v2Magnitude(AB)
+	end
+end
+
+function KillBorder:getDistance(object)
 	local min = v2Magnitude(getV2(object:getPoint(), self.flexiborder[2]))
 	local P = 2
 	for key, value in self.flexiborder do
@@ -135,22 +154,20 @@ function KillBorder:isBeyond(object)
 			Px = key
 		end
 	end
-	local A = Px - 1
-	local B = Px + 1
+	local A = P - 1
+	local B = P + 1
 	local PA = getV2(self.flexiborder[P], self.flexiborder[A])
 	local PB = getV2(self.flexiborder[P], self.flexiborder[B])
 	local PC = getV2(self.flexiborder[P], object:getPoint())
+	local dist = math.min(getMinDistance(self.flexiborder[P], self.flexiborder[A], object:getPoint()), getMinDistance(self.flexiborder[P], self.flexiborder[B], object:getPoint()))
 
-	if getV2Relation(PC, PA) > 0 and getV2Relation(PC, PB) < 0 then
-		return false
-	elseif getV2Relation(PC, PA) < 0 and getV2Relation(PC, PB) > 0 then
-		return true
-	elseif getV2Relation(PA, PB) > 0 then
-		if (getV2Relation(PC, PA) > 0 and getV2Relation(PC, PB) > 0) or (getV2Relation(PC, PA) < 0 and getV2Relation(PC, PB) < 0) then 
-			return true
-		end
+	local PCrelPA = getV2Relation(PC, PA)
+	local PCrelPB = getV2Relation(PC, PB)
+
+	if (PCrelPA < 0 and PCrelPB > 0) or ((getV2Relation(PA, PB) > 0) and ((PCrelPA > 0 and PCrelPB > 0) or (PCrelPA < 0 and PCrelPB < 0))) then
+		return dist * -1
 	end
-	return false
+	return dist
 end
 
 function getV2(A, B)
