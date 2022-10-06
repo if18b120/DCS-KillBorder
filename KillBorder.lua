@@ -123,10 +123,47 @@ function KillBorder.playerLoop(args)
 end
 
 function KillBorder:getDistance(object)
-	
-
-
 	return (self.border.a * object:getPoint().z - object:getPoint().x + self.border.c) / math.sqrt((self.border.a)^2 + 1) * self.side
+end
+
+function KillBorder:isBeyond(object)
+	local min = v2Magnitude(getV2(object:getPoint(), self.flexiborder[2]))
+	local P = 2
+	for key, value in self.flexiborder do
+		if v2Magnitude(getV2(object:getPoint(), value)) < min then
+			min = v2Magnitude(getV2(object:getPoint(), value))
+			Px = key
+		end
+	end
+	local A = Px - 1
+	local B = Px + 1
+	local PA = getV2(self.flexiborder[P], self.flexiborder[A])
+	local PB = getV2(self.flexiborder[P], self.flexiborder[B])
+	local PC = getV2(self.flexiborder[P], object:getPoint())
+
+	if getV2Relation(PC, PA) > 0 and getV2Relation(PC, PB) < 0 then
+		return false
+	elseif getV2Relation(PC, PA) < 0 and getV2Relation(PC, PB) > 0 then
+		return true
+	elseif getV2Relation(PA, PB) > 0 then
+		if (getV2Relation(PC, PA) > 0 and getV2Relation(PC, PB) > 0) or (getV2Relation(PC, PA) < 0 and getV2Relation(PC, PB) < 0) then 
+			return true
+		end
+	end
+	return false
+end
+
+function getV2(A, B)
+	return {x = B.x - A.x, z = B.z - A.z}
+end
+
+function v2Magnitude(V)
+	return math.sqrt(V.x² + V.z²)
+end
+
+function getV2Relation(V1, V2)
+	--dot = a.x*-b.y + a.y*b.x
+	return V1.x * -V2.z + V1.z * V2.x
 end
 
 function KillBorder:checkValidity(event)
