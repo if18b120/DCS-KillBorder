@@ -1,15 +1,16 @@
 KillBorder = {
-coalition = 0,
-side = 1,
-groupIdentifier = "",
-border = {a, c},
-loopID,
-checkTime,
-warnDistance,
-groupArray = {},
-punishType = 0,
-punishTimer,
-sound
+	coalition = 0,
+	side = 1,
+	groupIdentifier = "",
+	border = {a, c},
+	flexiborder = {},
+	loopID,
+	checkTime,
+	warnDistance,
+	groupArray = {},
+	punishType = 0,
+	punishTimer,
+	sound
 }
 
 --[[
@@ -23,7 +24,7 @@ Version History
 Mini Manual
 variables not mentioned here are internally managed and should not be fucked with
 
-ReferenceGroup = the group used to generate the border, 2 units required, relative position of the units doesnt matter (lageunabhängig, wollte dieses wort immer schon mal verwenden haha :))
+ReferenceGroup = the group used to generate the border, 2 units required, relative position of the units doesnt matter
 
 coalition/Coalition = 0 check all coalitions
 coalition/Coalition = 1 check just red coalition
@@ -60,26 +61,29 @@ function KillBorder:generate(ReferenceGroup, Coalition, Side, GroupIdentifier, T
 	
 	local units = Group.getByName(ReferenceGroup):getUnits()
 
-	local x1
-	local y1
+	-- local x1
+	-- local y1
 
-	if units[1]:getPoint().z < units[2]:getPoint().z then
-		x1 = units[1]:getPoint().z
-		y1 = units[1]:getPoint().x
-		x2 = units[2]:getPoint().z
-		y2 = units[2]:getPoint().x
-	else
-		x2 = units[1]:getPoint().z
-		y2 = units[1]:getPoint().x
-		x1 = units[2]:getPoint().z
-		y1 = units[2]:getPoint().x
+	-- if units[1]:getPoint().z < units[2]:getPoint().z then
+	-- 	x1 = units[1]:getPoint().z
+	-- 	y1 = units[1]:getPoint().x
+	-- 	x2 = units[2]:getPoint().z
+	-- 	y2 = units[2]:getPoint().x
+	-- else
+	-- 	x2 = units[1]:getPoint().z
+	-- 	y2 = units[1]:getPoint().x
+	-- 	x1 = units[2]:getPoint().z
+	-- 	y1 = units[2]:getPoint().x
+	-- end
+
+	-- self.border.a = (y2-y1)/(x2-x1)
+	-- self.border.c = y1 - self.border.a * x1
+
+	-- trigger.action.lineToAll(-1, 69420, {x = self.border.a * 1000000 + self.border.c, y = 500, z = 1000000}, {x = self.border.a * -1000000 + self.border.c, y = 500, z = -1000000}, {1, 0, 0, 1}, 1, true)
+	-- trigger.action.textToAll(-1, 42069, {x = units[1]:getPoint().x - 6000, y = units[1]:getPoint().y, z = units[1]:getPoint().z + 6000}, {1, 0, 0, 1}, {1, 0, 0, 0}, 20, true, 'PVP Border')
+	for key, value in units do
+		self.flexiborder.insert(value:getPoint())
 	end
-
-	self.border.a = (y2-y1)/(x2-x1)
-	self.border.c = y1 - self.border.a * x1
-
-	trigger.action.lineToAll(-1, 69420, {x = self.border.a * 1000000 + self.border.c, y = 500, z = 1000000}, {x = self.border.a * -1000000 + self.border.c, y = 500, z = -1000000}, {1, 0, 0, 1}, 1, true)
-	trigger.action.textToAll(-1, 42069, {x = units[1]:getPoint().x - 6000, y = units[1]:getPoint().y, z = units[1]:getPoint().z + 6000}, {1, 0, 0, 1}, {1, 0, 0, 0}, 20, true, 'PVP Border')
 end
 
 function KillBorder.playerLoop(args)
@@ -108,7 +112,7 @@ function KillBorder.playerLoop(args)
 				--to be implemented
 			end
 		elseif math.abs(distance) < args.self.warnDistance then
-			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ' you are close to the border of the allowed area, passing the border will be punished!', args.self.checkTime - 2, false)
+			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ' you are ' .. distance .. 'm away from the border of the allowed area, passing the border will be punished!', args.self.checkTime - 2, false)
 			trigger.action.outSoundForUnit(args.playerObject:getID(), args.self.sound)
 		else
 			args.self.groupArray[args.playerObject:getID()] = 0
@@ -119,6 +123,9 @@ function KillBorder.playerLoop(args)
 end
 
 function KillBorder:getDistance(object)
+	
+
+
 	return (self.border.a * object:getPoint().z - object:getPoint().x + self.border.c) / math.sqrt((self.border.a)^2 + 1) * self.side
 end
 
