@@ -5,6 +5,7 @@ Version History \
 2.2.0 - changed loop to be event based, several removals of undefined behaviour, corrections in the mini manual \
 2.2.1 - removed debug message, worst bug ever fixed \
 2.2.2a - experimental sound support \
+2.3.0 - border is now drawn on the map and the messaging is changed to unit only, includes minor bugfix with the punishtimer
 \
 Mini Manual \
 variables not mentioned here are internally managed and should not be fucked with \
