@@ -91,8 +91,6 @@ function KillBorder.playerLoop(args)
 		if args.self.groupArray[args.playerObject:getID()] == nil then
 			args.self.groupArray[args.playerObject:getID()] = 0
 		end
-		local x0 = args.playerObject:getPoint().z
-		local y0 = args.playerObject:getPoint().x
 		local distance = args.self:getDistance(args.playerObject)
 		if distance < 0 then
 			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ' you are beyond the border of the allowed area, you will be punished!', args.self.checkTime - 2, false)
@@ -117,7 +115,25 @@ function KillBorder.playerLoop(args)
 		else
 			args.self.groupArray[args.playerObject:getID()] = 0
 		end
+		args.self.loopID = timer.scheduleFunction(args.self.playerLoop, args, timer.getTime() + args.self.checkTime)
+	end
+end
 
+function KillBorder.playerWarnLoop(args)
+	if args.playerObject:isExist() then
+		if args.self.groupArray[args.playerObject:getID()] == nil then
+			args.self.groupArray[args.playerObject:getID()] = 1
+		end
+		local distance = args.self:getDistance(args.playerObject)
+		if distance > 0 and args.self.groupArray[args.playerObject:getID()] > -1 then
+			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ', you entered the PVP area!', 10, false)
+			trigger.action.outSoundForUnit(args.playerObject:getID(), args.self.sound)
+			args.self.groupArray[args.playerObject:getID()] = -1
+		elseif distance < 0 and args.self.groupArray[args.playerObject:getID()] < 1 then
+			trigger.action.outTextForUnit(args.playerObject:getID(), args.playerObject:getPlayerName() .. ', you left the PVP area!', 10, false)
+			trigger.action.outSoundForUnit(args.playerObject:getID(), args.self.sound)
+			args.self.groupArray[args.playerObject:getID()] = 1
+		end
 		args.self.loopID = timer.scheduleFunction(args.self.playerLoop, args, timer.getTime() + args.self.checkTime)
 	end
 end
@@ -209,6 +225,8 @@ function KillBorder:onEvent(event)
 		self.weaponLoop({self = self, weaponObject = event.weapon})
 	elseif event.id == 15 and self:checkValidity(event) == true then
 		self.playerLoop({self = self, playerObject = event.initiator})
+	elseif event.id == 15 then
+		self.playerWarnLoop({self = self, playerObject = event.initiator})
 	end
 end
 
